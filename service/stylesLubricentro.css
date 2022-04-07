@@ -1,0 +1,15 @@
+@media screen and (max-width:600px) {
+    .flex-wrap-custom{
+        flex-wrap: wrap;
+    }
+  }
+.span{
+    height: 20px;
+    width: 20px;
+    background-color: red;
+    border-radius: 50%;
+}
+.btn-red{
+    background-color: red !important;
+    color: white !important;
+}

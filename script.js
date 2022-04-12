@@ -1,7 +1,4 @@
 window.onload = ()=>{
-
-    
-
 let descripcionI = document.getElementById('descripcionI');
 let descripcionE = document.getElementById('descripcionE');
 let fechaI = document.getElementById('fechaI');
@@ -20,10 +17,9 @@ let cantidadI = document.getElementById('cantidadI');
 let egresos = document.getElementById('egresos');
 let cantidadE = document.getElementById('cantidadE');
 let billetera = document.getElementById('billetera');
-let desdeHasta = document.getElementById('desdeHasta');
 let cargarEgreso = document.getElementById('cargarEgreso');
-let sectionIngresos = document.getElementById('section-ingresos');
-let sectionEgresos = document.getElementById('section-egresos');
+let sectionIngresos = document.querySelectorAll('.section-ingresos');
+let sectionEgresos = document.querySelectorAll('.section-egresos');
 let seleccionado = document.createElement('div');
 
 let btnIngresos = document.getElementById('btnIngresos');
@@ -37,14 +33,18 @@ let mesSiguiente = document.getElementById('mesSiguiente');
 let mesE = document.getElementById('mesE');
 let mesAnteriorE = document.getElementById('mesAnteriorE');
 let mesSiguienteE = document.getElementById('mesSiguienteE');
-
+let btnBuscar = document.getElementById('btnBuscar');
+let busquedaContainer = document.querySelector('.busqueda-container')
+let desde = document.querySelector('#desde')
+let hasta = document.querySelector('#hasta')
+let reload = document.querySelector('#reload')
 
 let ingresosArr = [];
 let egresosArr = [];
-let ultimoMes;
-let ultimoMesAux;
-let ultimoMesE;
-let ultimoMesAuxE;
+let ultimoMes ='';
+let ultimoMesAux = '';
+let ultimoMesE='';
+let ultimoMesAuxE='';
 
 let isIngresos = true;
 
@@ -54,106 +54,152 @@ seleccionado.classList.add('bg-dark','mx-auto','mt-1')
 ingresos.textContent="0";
 egresos.textContent = "0";
 
+btnBuscar.addEventListener('click',()=>{
+    busquedaContainer.classList.toggle('d-none')
+    reload.classList.toggle('d-none')
+}
+)
 
-mesAnterior.addEventListener('click',()=>{
-    ultimoMes--;
-    if(ultimoMes<1){
-        ultimoMes = 1;
-    };
-    mesToString(ultimoMes)
-    console.log(ultimoMes);
-    let arrFilter = ingresosArr.filter(x=>{
+reload.addEventListener('click',()=>{
+    let arrFilterI = ingresosArr.filter(x=>{
         let fecha = x[2].split('-')
         return fecha[1] == ultimoMes;
     })
-    if(arrFilter.length == 0){
-        tbodyI.innerHTML = `<tr>
-        <td class='text-center fw-bold fs-5 text-secondary' colspan='4'>No se encontraron resultados...</td>
-    </tr>`;
-        cantidadI.textContent = 'Movimientos: 0';
-    return;
-    }
-    mostrarIngresos(arrFilter)
-})
-
-mesSiguiente.addEventListener('click',()=>{
-    ultimoMes++;
-    if(ultimoMes>ultimoMesAux){
-        ultimoMes = ultimoMesAux
-    };
-    mesToString(ultimoMes)
-
-    console.log(ultimoMes);
-    let arrFilter = ingresosArr.filter(x=>{
-        let fecha = x[2].split('-')
-        return fecha[1] == ultimoMes;
-    })
-    if(arrFilter.length == 0){
-        tbodyI.innerHTML = `<tr>
-        <td class='text-center fw-bold fs-5 text-secondary' colspan='4'>No se encontraron resultados...</td>
-    </tr>`;
-    cantidadI.textContent = 'Movimientos: 0';
-    return
-    }
-    mostrarIngresos(arrFilter)
-})
-mesAnteriorE.addEventListener('click',()=>{
-    ultimoMesE--;
-    if(ultimoMesE<1){
-        ultimoMesE = 1;
-    };
-    mesToString(ultimoMesE)
-    console.log(ultimoMesE);
-    let arrFilter = egresosArr.filter(x=>{
+    let arrFilterE = egresosArr.filter(x=>{
         let fecha = x[2].split('-')
         return fecha[1] == ultimoMesE;
     })
-    if(arrFilter.length == 0){
-        tbodyE.innerHTML = `<tr>
-        <td class='text-center fw-bold fs-5 text-secondary' colspan='4'>No se encontraron resultados...</td>
-    </tr>`;
-        cantidadE.textContent = 'Movimientos: 0';
-    return;
-    }
-    mostrarEgresos(arrFilter)
+    mostrarIngresos(arrFilterI)
+    mostrarEgresos(arrFilterE)
+    desde.value = '';
+    hasta.value = '';
+    busquedaContainer.classList.toggle('d-none')
+    reload.classList.toggle('d-none')
 })
-
-mesSiguienteE.addEventListener('click',()=>{
-    ultimoMesE++;
-    if(ultimoMesE>ultimoMesAuxE){
-        ultimoMesE = ultimoMesAuxE
-    };
-    mesToString(ultimoMesE)
-
-    console.log(ultimoMesE);
-    let arrFilter = egresosArr.filter(x=>{
-        let fecha = x[2].split('-')
-        return fecha[1] == ultimoMesE;
+hasta.addEventListener('change',()=>{
+    filtrarDesdeHasta(desde,hasta)
+})
+desde.addEventListener('change',()=>{
+    filtrarDesdeHasta(desde,hasta)
+})
+function filtrarDesdeHasta(desde,hasta){
+    let arrFilterI = ingresosArr.filter(x=>{
+        let fecha = x[2]
+        return fecha >= desde.value && fecha <= hasta.value;
     })
-    if(arrFilter.length == 0){
-        tbodyE.innerHTML = `<tr>
-        <td class='text-center fw-bold fs-5 text-secondary' colspan='4'>No se encontraron resultados...</td>
-    </tr>`;
-    cantidadE.textContent = 'Movimientos: 0';
-    return
-    }
-    mostrarEgresos(arrFilter)
-})
+    let arrFilterE = egresosArr.filter(x=>{
+        let fecha = x[2]
+        return fecha >= desde.value && fecha <= hasta.value;
+    })
+    mostrarIngresos(arrFilterI)
+    mostrarEgresos(arrFilterE)
+}
+
+// mesAnterior.addEventListener('click',()=>{
+//     ultimoMes--;
+//     if(ultimoMes<1){
+//         ultimoMes = 1;
+//     };
+//     mesToString(ultimoMes)
+//     console.log(ultimoMes);
+//     let arrFilter = ingresosArr.filter(x=>{
+//         let fecha = x[2].split('-')
+//         return fecha[1] == ultimoMes;
+//     })
+//     if(arrFilter.length == 0){
+//         tbodyI.innerHTML = `<tr>
+//         <td class='text-center fw-bold fs-5 text-secondary' colspan='4'>No se encontraron resultados...</td>
+//     </tr>`;
+//         cantidadI.textContent = 'Movimientos: 0';
+//         billetera.textContent = '0'
+//         ingresos.textContent = '0'
+      
+
+//     return;
+//     }
+//     mostrarIngresos(arrFilter)
+// })
+
+// mesSiguiente.addEventListener('click',()=>{
+//     ultimoMes++;
+//     if(ultimoMes>ultimoMesAux){
+//         ultimoMes = ultimoMesAux
+//     };
+//     mesToString(ultimoMes)
+
+//     console.log(ultimoMes);
+//     let arrFilter = ingresosArr.filter(x=>{
+//         let fecha = x[2].split('-')
+//         return fecha[1] == ultimoMes;
+//     })
+//     if(arrFilter.length == 0){
+//         tbodyI.innerHTML = `<tr>
+//         <td class='text-center fw-bold fs-5 text-secondary' colspan='4'>No se encontraron resultados...</td>
+//     </tr>`;
+//     cantidadI.textContent = 'Movimientos: 0';
+//     return
+//     }
+//     mostrarIngresos(arrFilter)
+// })
+// mesAnteriorE.addEventListener('click',()=>{
+//     ultimoMesE--;
+//     if(ultimoMesE<1){
+//         ultimoMesE = 1;
+//     };
+//     mesToString(ultimoMesE)
+//     console.log(ultimoMesE);
+//     let arrFilter = egresosArr.filter(x=>{
+//         let fecha = x[2].split('-')
+//         return fecha[1] == ultimoMesE;
+//     })
+//     if(arrFilter.length == 0){
+//         tbodyE.innerHTML = `<tr>
+//         <td class='text-center fw-bold fs-5 text-secondary' colspan='4'>No se encontraron resultados...</td>
+//     </tr>`;
+//         cantidadE.textContent = 'Movimientos: 0';
+//         egresos.textContent = '0'
+//         billetera.textContent = '0'
+//     return;
+//     }
+//     mostrarEgresos(arrFilter)
+// })
+
+// mesSiguienteE.addEventListener('click',()=>{
+//     ultimoMesE++;
+//     if(ultimoMesE>ultimoMesAuxE){
+//         ultimoMesE = ultimoMesAuxE
+//     };
+//     mesToString(ultimoMesE)
+
+//     console.log(ultimoMesE);
+//     let arrFilter = egresosArr.filter(x=>{
+//         let fecha = x[2].split('-')
+//         return fecha[1] == ultimoMesE;
+//     })
+//     if(arrFilter.length == 0){
+//         tbodyE.innerHTML = `<tr>
+//         <td class='text-center fw-bold fs-5 text-secondary' colspan='4'>No se encontraron resultados...</td>
+//     </tr>`;
+//     cantidadE.textContent = 'Movimientos: 0';
+//     return
+//     }
+//     mostrarEgresos(arrFilter)
+// })
 
 
 btnIngresos.addEventListener('click',()=>{
     isIngresos = true;
-    mesToString(ultimoMes)
-    sectionEgresos.classList.add('d-none')
-    sectionIngresos.classList.remove('d-none');
+    // mesToString(ultimoMes)
+    sectionEgresos.forEach(x=>x.classList.add('d-none'))
+    sectionIngresos.forEach(x=>x.classList.remove('d-none'))
   //  egresos.removeChild(seleccionado);
   btnIngresos.appendChild(seleccionado);
 })
 btnEgresos.addEventListener('click',()=>{
     isIngresos = false;
-    mesToString(ultimoMesE)
-    sectionIngresos.classList.add('d-none')
-    sectionEgresos.classList.remove('d-none')
+    // mesToString(ultimoMesE)
+    sectionIngresos.forEach(x=>x.classList.add('d-none'))
+    sectionEgresos.forEach(x=>x.classList.remove('d-none'))
 //ingresos.removeChild(seleccionado);
 btnEgresos.appendChild(seleccionado);
     })
@@ -184,7 +230,6 @@ const getDatos =  ()=>{
     loader.classList.remove('d-none');
     let form = new FormData();
     form.append('user',infoUser.textContent)
-    let resultado = [];
     fetch('verIngresos.php',{
         method:"POST",
         body:form,
@@ -192,6 +237,7 @@ const getDatos =  ()=>{
     .then(res => res.json())
     .then(data => {
         ingresosArr = data;
+        console.log(data);
         ultimoMes = ingresosArr[0][2].split('-');
         ultimoMes = ultimoMes[1]
         ultimoMesAux = ultimoMes;
@@ -200,7 +246,8 @@ const getDatos =  ()=>{
             let fecha = x[2].split('-')
             return fecha[1] == ultimoMes;
         })
-        mesToString(ultimoMes)
+        console.log(ultimoMes);
+        // mesToString(ultimoMes)
         mostrarIngresos(arrFilter)
     });
    
@@ -301,7 +348,6 @@ const eliminarEgreso = async (e)=>{
 
 const getEgresos =  ()=>{
     loader.classList.remove('d-none');
-    let resultado = [];
     let form = new FormData();
     form.append('user',infoUser.textContent)
     fetch('verEgresos.php',{
@@ -312,6 +358,7 @@ const getEgresos =  ()=>{
     .then(data => {
         tbodyE.innerHTML ="";
         egresosArr = data;
+        console.log(data);
         ultimoMesE = egresosArr[0][2].split('-');
         ultimoMesE = ultimoMesE[1]
         ultimoMesAuxE = ultimoMesE;

@@ -3,7 +3,7 @@ if(isset($_POST['user']) && !empty($_POST['user'])){
    $user = $_POST['user'];
 include "conexion.php";
 
-$resultado = $mysqli->query("SELECT * FROM ingresos WHERE user = '".$user."' ORDER BY id,fecha DESC");
+$resultado = $mysqli->query("SELECT * FROM ingresos WHERE user = '".$user."' ORDER BY fecha DESC,id DESC");
 
 $filas = array();
 while ($fila = $resultado->fetch_row()) {
